@@ -1,4 +1,6 @@
 
+def label = "worker-${UUID.randomUUID().toString()}"
+
 podTemplate(label: label, serviceAccount: 'jenkins',
                 containers: [
                         containerTemplate(name: 'gradle', image: 'gradle:6.2.2-jdk8', ttyEnabled: true, command: 'cat'),
