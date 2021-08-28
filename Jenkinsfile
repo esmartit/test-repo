@@ -31,20 +31,16 @@
                                 sh "git config --global user.email 'tech@esmartit.es'"
                                 sh "git config --global user.name 'esmartit'"
                                 
-                                git(
-                                    url: 'git@github.com:esmartit/test-repo.git',
-                                    credentialsId: 'esmartit-github-ssh',
-                                    branch: "${env.BRANCH_NAME}"
-                                )
+                                checkout([$class: 'GitSCM', 
+                                        branches: [[name: '*/${env.CURRENT_BRANCH}'],
+                                                    [name: '*/gh-pages']], 
+                                        extensions: [],
+                                        userRemoteConfigs: [[credentialsId: 'esmartit-github-ssh', url: 'git@github.com:esmartit/test-repo.git']]])
                             }
                             stage('Switch to gh-pages') {
+                                echo 'hello there!'
                                 
-                                git(
-                                    url: 'git@github.com:esmartit/test-repo.git',
-                                    credentialsId: 'esmartit-github-ssh',
-                                    branch: "gh-pages"
-                                )
-                                
+                                sh "git checkout gh-pages"
                                 sh "echo test: $label >> index.yaml"
                                 sh "git add ."
                                 sh "git status"
@@ -52,7 +48,7 @@
                                 
                                 withEnv(['GIT_SSH_COMMAND=ssh -o StrictHostKeyChecking=no']) {
                                     sshagent(credentials: ['esmartit-github-ssh']) {
-                                        sh "git push --set-upstream origin gh-pages"
+                                        sh "git push"
                                     }
                                 }
                             }
